@@ -1,0 +1,32 @@
+__pycache__
+.idea/
+/venv/
+data
+storage
+*.csv
+*.xlsx
+*.pickle
+*.pkl
+*.zip
+*.png
+*.mod
+*.mod.p
+*.parquet
+*.html
+*.txt
+
+#MAC Files
+*.DS_Store
+
+# package files
+*.whl
+/.venv/
+*.ipynb_checkpoints/
+
+# Ignore dynaconf secret files
+*.secrets.*
+
+# pytest
+*.pytest_cache*
+.env
+.sandbox
