@@ -2,7 +2,7 @@ import logging
 import os.path
 import urllib.request
 
-from floral_oracle.paths import MODEL_PATH, MODEL_URL
+from floral_oracle.utils.paths import MODEL_PATH, MODEL_URL
 
 
 def download_llama_cpp_model(url: str = MODEL_URL, destination: str = MODEL_PATH):

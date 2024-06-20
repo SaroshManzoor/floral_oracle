@@ -5,7 +5,7 @@ from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from floral_oracle.paths import CORPUS_DIR_PATH
+from floral_oracle.utils.paths import CORPUS_DIR_PATH
 
 
 def load_corpus() -> list[Document]:

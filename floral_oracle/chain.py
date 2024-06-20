@@ -10,7 +10,7 @@ from langchain_core.documents import Document
 from floral_oracle.corpus import load_corpus, split_corpus
 from floral_oracle.embed_model import get_embedding_model
 from floral_oracle.model import validate_model
-from floral_oracle.paths import MODEL_PATH, VECTOR_STORE_PATH
+from floral_oracle.utils.paths import MODEL_PATH, VECTOR_STORE_PATH
 
 
 def get_retrieval_chain() -> ConversationalRetrievalChain:
@@ -22,25 +22,23 @@ def get_retrieval_chain() -> ConversationalRetrievalChain:
         model_path=MODEL_PATH,
         temperature=0,
         max_tokens=1024,
-        n_gpu_layers=2,
+        n_gpu_layers=50,
         verbose=False,
         n_ctx=4096,
     )
+    embedding_model = get_embedding_model(fast=True)
 
     if os.path.exists(VECTOR_STORE_PATH):
         vector_store = FAISS.load_local(
             VECTOR_STORE_PATH,
-            embeddings=get_embedding_model(fast=True),
+            embeddings=embedding_model,
             allow_dangerous_deserialization=True,
         )
     else:
         corpus = load_corpus()
         documents: list[Document] = split_corpus(corpus)
 
-        vector_store = FAISS.from_documents(
-            documents, embedding=get_embedding_model(fast=True)
-        )
-
+        vector_store = FAISS.from_documents(documents, embedding=embedding_model)
         vector_store.save_local(VECTOR_STORE_PATH)
 
     retriever = vector_store.as_retriever(
@@ -68,30 +66,14 @@ if __name__ == "__main__":
 
     chat_history = []
 
-    result = qa_chain({"question": "How to get rid of mealy-bugs?"})
-    # chat_history.extend(result["chat_history"])
-    #
-    # result = qa_chain(
-    #     {"question": "what about fungus gnats", "chat_history": chat_history}
-    # )
-    #
-    # chat_history.extend(result["chat_history"])
-    #
-    # result = qa_chain(
-    #     {"question": "are they harmful to plants?", "chat_history": chat_history}
-    # )
-    #
-    # answer = result["answer"].strip()
+    result = qa_chain({"question": "how do I prune basil?"})
 
-    #
-    # # chat
-    #
-    # answer += "\n\n\nSource(s): \n"
-    #
-    # for document in result["source_documents"][:1]:
-    #     answer += f"Title: {document.metadata['title']}\n"
-    #     answer += f"Author: {document.metadata['author']}\n"
-    #     answer += f"Page: {document.metadata['page']}\n"
-    #
-    # print(answer)
-#
+    source_documents = result["source_documents"]
+
+    sources = []
+    for document in source_documents:
+        sources.append(
+            f"Title: {document.metadata['title']} |    "
+            f"Author: {document.metadata['author']}    |    "
+            f"Page: {document.metadata['page']}\n\n"
+        )
